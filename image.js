@@ -3,9 +3,14 @@ const app = express();
 
 const fs = require('fs');
 
+var busboy = require("busboy");
+
 const { exec } = require("child_process");
 
-var upload_video = require("./video_upload.js");
+// var upload_video = require("./video_upload.js");
+
+// var bodyParser = require("body-parser")
+// app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.raw({ limit: '50mb' })) // for parsing raw request body
 
@@ -58,16 +63,20 @@ app.post('/api/image', (req, res) => {
 });
 
 
-app.post("/video_upload", function (req, res) {
-    console.log("Inside /video_upload handler");
-    upload_video(req, function(err, data) {
-    
-    if (err) {
-        return res.status(404).end(JSON.stringify(err));
-    }
-    
-    res.send(data);
+app.post("/api/video_upload", function (req, res) {
+   
+    const bb = busboy({ headers: req.headers });
+    bb.on('file', (name, file, info) => {
+    //   const saveTo = path.join('./temp', `busboy-upload-${random()}`);
+      const saveTo = './temp/video.mp4'
+      file.pipe(fs.createWriteStream(saveTo));
     });
+    bb.on('close', () => {
+      res.writeHead(200, { 'Connection': 'close' });
+      res.end(`That's all folks!`);
+    });
+    req.pipe(bb);
+    return;
 });
 
 
