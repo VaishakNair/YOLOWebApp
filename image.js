@@ -5,6 +5,8 @@ const fs = require('fs');
 
 const { exec } = require("child_process");
 
+var upload_video = require("./video_upload.js");
+
 app.use(express.raw({ limit: '50mb' })) // for parsing raw request body
 
 app.get('/', (req, res) => {
@@ -53,6 +55,19 @@ app.post('/api/image', (req, res) => {
 
 
 
+});
+
+
+app.post("/video_upload", function (req, res) {
+    console.log("Inside /video_upload handler");
+    upload_video(req, function(err, data) {
+    
+    if (err) {
+        return res.status(404).end(JSON.stringify(err));
+    }
+    
+    res.send(data);
+    });
 });
 
 
