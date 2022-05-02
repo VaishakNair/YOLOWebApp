@@ -83,4 +83,9 @@ app.post("/api/video_upload", function (req, res) {
 });
 
 
+app.get("/api/get_count", function (req, res) {
+    
+  res.json({message: 15});
+});
+
 app.listen(3000, () => console.log('Listening on port 3000'));
