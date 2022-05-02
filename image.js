@@ -64,16 +64,19 @@ app.post('/api/image', (req, res) => {
 
 
 app.post("/api/video_upload", function (req, res) {
+    
    
     const bb = busboy({ headers: req.headers });
     bb.on('file', (name, file, info) => {
     //   const saveTo = path.join('./temp', `busboy-upload-${random()}`);
+      console.log('Saving file...', name);
       const saveTo = './temp/video.mp4'
       file.pipe(fs.createWriteStream(saveTo));
+      console.log('File saved.');
     });
     bb.on('close', () => {
-      res.writeHead(200, { 'Connection': 'close' });
-      res.end(`That's all folks!`);
+    //   res.writeHead(200, { 'Connection': 'close' });
+      res.json({message: 'Video uploaded'});
     });
     req.pipe(bb);
     return;
