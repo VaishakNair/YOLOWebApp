@@ -33,7 +33,7 @@ app.post('/api/image', (req, res) => {
 
     exec(`python /home/vaishak/Coder/AgricultureProject/YOLOTensorFlowConverter/tensorflow-yolov4-tflite/detect.py --weights /home/vaishak/Coder/AgricultureProject/YOLOTensorFlowConverter/tensorflow-yolov4-tflite/checkpoints/${cropName}-416.tflite --size 416 --model yolov4 --images ${path} --framework tflite -dont_show`, (error, stdout, stderr) => {
         if (error) {
-            console.log(`error: ${error.message}`);
+            console.log(`error: ${error.name} --> ${error.message}`);
             return;
         }
         if (stderr) {
@@ -84,8 +84,60 @@ app.post("/api/video_upload", function (req, res) {
 
 
 app.get("/api/get_count", function (req, res) {
+  // TODO
+
+  const path = './temp/video.mp4';
+  const outputPath = './temp/out.avi';
+
+  const cropName = req.query.crop;
+  console.log(`Crop: ${cropName}`);
+
+  exec(`python /home/vaishak/Coder/AgricultureProject/yolov4-deepsort/object_tracker.py --video ${path} --output ${outputPath} --model yolov4 --framework tflite --weights /home/vaishak/Coder/AgricultureProject/YOLOTensorFlowConverter/tensorflow-yolov4-tflite/checkpoints/${cropName}-416.tflite --info --dont_show | grep 'Tracker ID:' | tail -1 | grep -iPo "(?<=Tracker ID: )\\d+(?=,)"`, (error, stdout, stderr) => {
     
-  res.json({message: 15});
+    console.log(`stdout: ${stdout}`);
+   
+    
+    if (error) {
+          console.log(`error: ${error.name} --> ${error.message}`);
+          return;
+      }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        // if (true) { // At least one tomato was found in the input image:
+            
+        //     // console.log(`stderr: ${stderr}`);
+        //     res.json({ message: stderr });
+        //     //  res.statusCode = 200;
+        //     //  res.setHeader('Content-Type', 'text/html');
+        //     //  res.end(`<h1>Tomato count: ${found.length}</h1>`);
+        // }
+        // else { // No tomatoes were found in the input image:
+        //     res.json({ message: 0 })
+        // }
+        return;
+    }
+
+    if (stdout) {
+        if (true) { // At least one tomato was found in the input image:
+            
+            // console.log(`stderr: ${stderr}`);
+            res.json({ message: parseInt(stdout.trim()) });
+            //  res.statusCode = 200;
+            //  res.setHeader('Content-Type', 'text/html');
+            //  res.end(`<h1>Tomato count: ${found.length}</h1>`);
+        }
+        else { // No tomatoes were found in the input image:
+            res.json({ message: 0 })
+        }
+        return;
+    }
+
+
+
+     
+  });
+
+  
 });
 
 app.listen(3000, () => console.log('Listening on port 3000'));
