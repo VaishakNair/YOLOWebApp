@@ -99,6 +99,7 @@ app.get("/api/get_count", function (req, res) {
     
     if (error) {
           console.log(`error: ${error.name} --> ${error.message}`);
+          res.json({ message: 0 });
           return;
       }
     if (stderr) {
@@ -114,6 +115,7 @@ app.get("/api/get_count", function (req, res) {
         // else { // No tomatoes were found in the input image:
         //     res.json({ message: 0 })
         // }
+        res.json({ message: 0 })
         return;
     }
 
